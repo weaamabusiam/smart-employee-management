@@ -152,51 +152,6 @@ const String baseUrl = 'http://YOUR_SERVER_IP:3000/api';
 - **חיבור WiFi** - תקשורת עם השרת
 - **ניהול חכם** - מניעת עומס על הרשת
 
-## 🔧 פתרון בעיות
-
-### השרת לא עובד?
-- בדוק ש-MySQL פועל
-- בדוק את פרטי החיבור ב-.env
-- בדוק שהפורט 3000 פנוי
-- בדוק את הלוגים בקונסול
-
-### הדשבורד לא נטען?
-- בדוק שהשרת פועל על פורט 3000
-- רענן את הדפדפן (Ctrl+F5)
-- בדוק את הקונסול לשגיאות
-- בדוק את החיבור לאינטרנט
-
-### אפליקציית מובייל לא עובדת?
-- בדוק שהשרת פועל
-- בדוק את הגדרות ה-API
-- בדוק הרשאות Bluetooth
-- בדוק שהאפליקציה מותקנת נכון
-
-### ESP32 לא מתחבר?
-- בדוק את פרטי ה-WiFi
-- בדוק שהשרת פועל
-- בדוק את הגדרות ה-Beacon
-- בדוק את החיבור לרשת
-
-### נוכחות לא מתעדכנת?
-- בדוק שהשירות הרקע פועל
-- בדוק את הלוגים בשרת
-- בדוק שהאפליקציה סורקת
-- בדוק את החיבור ל-ESP32
-
-## 📈 ביצועים
-
-### מהירות
-- **טעינת דשבורד**: < 2 שניות
-- **עדכון נוכחות**: < 1 שנייה
-- **סריקת Bluetooth**: 30 שניות
-- **דוח חודשי**: < 3 שניות
-
-### אמינות
-- **זמינות**: 99.9%
-- **דיוק נוכחות**: 99.5%
-- **זמן תגובה**: < 500ms
-- **גיבוי אוטומטי**: יומי
 
 ## 🔒 אבטחה
 
@@ -235,17 +190,5 @@ const String baseUrl = 'http://YOUR_SERVER_IP:3000/api';
 ### דוקומנטציה
 - [מדריך שרת](backend/README.md)
 - [מדריך דשבורד](dashboard/README.md)
-- [מדריך מובייל](attendance_mobile_flutter/README.md)
-- [מדריך חומרה](esp32/README.md)
-
-### לוגים
-- **שרת**: `backend/logs/`
-- **דשבורד**: Browser Console
-- **מובייל**: Flutter Debug Console
-- **ESP32**: Serial Monitor
-
----
-
-**נבנה עם ❤️ לניהול נוכחות מודרני ומקצועי**
-
-**גרסה**: 2.0 | **עדכון אחרון**: 2025
+- [מדריך מובייל](mobile/README.md)
+- [מדריך חומרה](aruino/README.md)

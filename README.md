@@ -71,7 +71,7 @@ flutter build apk
 - **[🖥️ שרת](backend/README.md)** - API, בסיס נתונים ושירות רקע
 - **[📊 דשבורד](dashboard/README.md)** - ממשק ניהול מתקדם עם דוחות
 - **[📱 אפליקציה](mobile/README.md)** - אפליקציית Flutter למובייל
-- **[🔧 חומרה](ardunio/README.md)** - Beacon Bluetooth
+- **[🔧 חומרה](arduino/README.md)** - Beacon Bluetooth
 
 ## 🌐 גישה למערכת
 
@@ -182,4 +182,5 @@ const char* serverUrl = "http://YOUR_SERVER_IP:3000";
 - [ ] API documentation
 - [ ] Monitoring
 )
+
 

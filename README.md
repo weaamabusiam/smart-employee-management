@@ -48,6 +48,7 @@
 mysql -u root -p
 CREATE DATABASE attendance_system;
 mysql -u root -p attendance_system < schema.sql
+- או דרך טעינת קובץ ה dump דרך mysqlworkbench.
 
 # 2. הפעלת שרת
 cd backend
@@ -69,8 +70,8 @@ flutter build apk
 
 - **[🖥️ שרת](backend/README.md)** - API, בסיס נתונים ושירות רקע
 - **[📊 דשבורד](dashboard/README.md)** - ממשק ניהול מתקדם עם דוחות
-- **[📱 אפליקציה](attendance_mobile_flutter/README.md)** - אפליקציית Flutter למובייל
-- **[🔧 חומרה](esp32/README.md)** - Beacon Bluetooth
+- **[📱 אפליקציה](mobile/README.md)** - אפליקציית Flutter למובייל
+- **[🔧 חומרה](ardunio/README.md)** - Beacon Bluetooth
 
 ## 🌐 גישה למערכת
 
@@ -98,11 +99,7 @@ const char* serverUrl = "http://YOUR_SERVER_IP:3000";
 ```
 
 ### הגדרת אפליקציית מובייל
-```dart
-// ערוך את attendance_mobile_flutter/lib/services/api_service.dart
-const String baseUrl = 'http://YOUR_SERVER_IP:3000/api';
-```
-
+- אפשר להגדיר את החיבור לשרת דרך האפלקציה.
 ## 🤖 מערכת נוכחות אוטומטית
 
 המערכת כוללת מנגנון נוכחות אוטומטי מתקדם:
@@ -184,11 +181,5 @@ const String baseUrl = 'http://YOUR_SERVER_IP:3000/api';
 - [ ] Unit tests
 - [ ] API documentation
 - [ ] Monitoring
+)
 
-## 📞 תמיכה
-
-### דוקומנטציה
-- [מדריך שרת](backend/README.md)
-- [מדריך דשבורד](dashboard/README.md)
-- [מדריך מובייל](mobile/README.md)
-- [מדריך חומרה](aruino/README.md)

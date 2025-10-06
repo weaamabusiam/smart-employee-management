@@ -14,7 +14,7 @@
 - **טווח**: עד 30 מטר (תלוי בסביבה)
 - **צריכת חשמל נמוכה**: מתאים לפעולה 24/7
 
-### **שרת Heartbeat**
+### 💓 **שידור Heartbeat**
 - **דיווח תקופתי**: שולח heartbeat כל 30 שניות
 - **ניטור מצב**: השרת יודע אם המכשיר פעיל
 - **עדכון סטטוס**: מעדכן את מסד הנתונים שהמכשיר online
@@ -42,7 +42,7 @@
 3. עבור ל: **File → Preferences**
 4. ב-"Additional Board Manager URLs" הוסף:
    ```
-   https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+   https://espressif.github.io/arduino-esp32/package_esp32_dev_index.json
    ```
 5. לחץ OK
 

@@ -28,11 +28,11 @@
 ```
 
 ### 🔄 זרימת הנתונים:
-1. **ESP32** משדר כ-Beacon Bluetooth קבוע
-2. **Mobile App** סורקת את ה-Beacon ברקע ומדווחת נוכחות
-3. **Dashboard** מציג ניהול מלא עם דוחות חודשיים
-4. **Backend** מעבד את כל הנתונים ושומר בבסיס הנתונים
-5. **Background Service** מנהל סטטוס נוכחות אוטומטית (כל 10 דקות)
+1. ה **ESP32** משדר כ-Beacon Bluetooth קבוע
+2. ה **Mobile App** סורקת את ה-Beacon ברקע ומדווחת נוכחות
+3. ה **Dashboard** מציג ניהול מלא עם דוחות חודשיים
+4. ה **Backend** מעבד את כל הנתונים ושומר בבסיס הנתונים
+5. ה **Background Service** מנהל סטטוס נוכחות אוטומטית (כל 10 דקות)
 
 ## 🚀 התחלה מהירה
 
@@ -109,7 +109,7 @@ const char* serverUrl = "http://YOUR_SERVER_IP:3000";
 - **עדכון בזמן אמת** - אפליקציית מובייל מדווחת נוכחות ברקע
 - **ניהול חכם** - מניעת שגיאות נוכחות אוטומטית
 
-### 🔧 API לניהול נוכחות:
+### 🔧  ה API לניהול נוכחות:
 - `GET /api/presence-background/status` - סטטוס השירות
 - `POST /api/presence-background/trigger-update` - הפעלת עדכון ידני
 - `POST /api/presence-background/start` - הפעלת השירות
@@ -139,13 +139,13 @@ const char* serverUrl = "http://YOUR_SERVER_IP:3000";
 - **חיפוש מתקדם** - סינון לפי שם, קוד, מחלקה
 
 ### 🖥️ שרת (Node.js)
-- **API מתקדם** - RESTful עם JWT
+- **קיים API מתקדם** - RESTful עם JWT
 - **שירות רקע** - ניהול נוכחות אוטומטי
 - **בסיס נתונים** - MySQL עם שאילתות מורכבות
 - **אבטחה** - אימות והרשאות מתקדמות
 
 ### 🔧 חומרה (ESP32)
-- **Beacon Bluetooth** - שידור קבוע לזיהוי
+- **קיים Beacon Bluetooth** - שידור קבוע לזיהוי
 - **חיבור WiFi** - תקשורת עם השרת
 - **ניהול חכם** - מניעת עומס על הרשת
 
@@ -157,7 +157,7 @@ const char* serverUrl = "http://YOUR_SERVER_IP:3000";
 - **הצפנת סיסמאות** - bcrypt
 - **הרשאות מבוססות תפקיד** - admin/manager/employee
 - **הגנה מפני SQL Injection** - prepared statements
-- **CORS מוגדר** - הגנה מפני cross-origin
+- **קיים CORS מוגדר** - הגנה מפני cross-origin
 
 ### ניהול משתמשים
 - **מנהל מערכת** - גישה מלאה
@@ -182,5 +182,6 @@ const char* serverUrl = "http://YOUR_SERVER_IP:3000";
 - [ ] API documentation
 - [ ] Monitoring
 )
+
 
 

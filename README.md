@@ -109,13 +109,7 @@ const char* serverUrl = "http://YOUR_SERVER_IP:3000";
 - **עדכון בזמן אמת** - אפליקציית מובייל מדווחת נוכחות ברקע
 - **ניהול חכם** - מניעת שגיאות נוכחות אוטומטית
 
-### 🔧  ה API לניהול נוכחות:
-- `GET /api/presence-background/status` - סטטוס השירות
-- `POST /api/presence-background/trigger-update` - הפעלת עדכון ידני
-- `POST /api/presence-background/start` - הפעלת השירות
-- `POST /api/presence-background/stop` - עצירת השירות
-
-### 📊 יתרונות:
+# 📊 יתרונות:
 - ✅ ניהול אוטומטי מלא ללא התערבות ידנית
 - ✅ מניעת שגיאות נוכחות
 - ✅ עדכון בזמן אמת של סטטוס עובדים
@@ -182,6 +176,7 @@ const char* serverUrl = "http://YOUR_SERVER_IP:3000";
 - [ ] API documentation
 - [ ] Monitoring
 )
+
 
 
 

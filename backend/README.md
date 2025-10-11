@@ -114,16 +114,6 @@ npm start
 - **עדכון אוטומטי** - מעדכן את שדה `is_present` בבסיס הנתונים
 - **לוגים מפורטים** - מציג איזה עובדים עודכנו
 
-### 🔧 API לניהול השירות:
-```bash
-# בדיקת סטטוס השירות
-curl -X GET http://localhost:3000/api/presence-background/status \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# הפעלת עדכון ידני
-curl -X POST http://localhost:3000/api/presence-background/trigger-update \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
 
 ## קבצים חשובים
 - `src/server.js` - השרת הראשי

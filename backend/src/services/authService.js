@@ -17,11 +17,18 @@ exports.login = (username, password) => {
       WHERE u.username = ?
     `, [username], (err, results) => {
       if (err) return reject(err);
-      if (results.length === 0) return reject(new Error('Invalid credentials'));
+      if (results.length === 0) {
+        console.log(`🔍 authService: username not found -> ${username}`);
+        return reject(new Error('Invalid credentials'));
+      }
       const user = results[0];
+      console.log(`🔍 authService: found user id=${user.id} for username=${username}`);
       bcrypt.compare(password, user.password_hash, (err, match) => {
         if (err) return reject(err);
-        if (!match) return reject(new Error('Invalid credentials'));
+        if (!match) {
+          console.log(`🔒 authService: password mismatch for user=${username}`);
+          return reject(new Error('Invalid credentials'));
+        }
         const token = jwt.sign(
           { 
             id: user.id, 
@@ -38,7 +45,7 @@ exports.login = (username, password) => {
             id: user.id, 
             username: user.username, 
             role_id: user.role_id,
-            employee_id: user.employee_id,
+            employee_id: user.employee_code,  // Fixed: use employee_code not employee_id
             employee_name: user.employee_name,
             employee_email: user.employee_email
           } 

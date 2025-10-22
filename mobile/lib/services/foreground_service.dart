@@ -30,13 +30,16 @@ class AttendanceTaskHandler extends TaskHandler {
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
+    print('[ForegroundTask] onStart called at $timestamp');
     await _loadConfiguration();
-    
+    print('[ForegroundTask] configuration loaded. employee=$_employeeId api=$_apiBaseUrl');
+
     _scanTimer = Timer.periodic(
       Duration(seconds: SCAN_INTERVAL_SECONDS),
       (timer) => _performScan(),
     );
-    
+
+    // perform initial scan immediately
     _performScan();
   }
 
@@ -68,14 +71,15 @@ class AttendanceTaskHandler extends TaskHandler {
       _employeeId = prefs.getString('employee_id');
       _token = prefs.getString('auth_token');
       
-      final apiIp = prefs.getString('api_ip') ?? '10.0.0.4';
+      final apiIp = prefs.getString('api_ip') ?? '10.0.0.13';
       final apiPort = prefs.getString('api_port') ?? '3000';
       _apiBaseUrl = 'http://$apiIp:$apiPort';
       
       await _loadRegisteredEsp32Devices();
       await _requestPermissions();
+      print('[ForegroundTask] Loaded registered ESP32 devices: $_registeredEsp32Devices');
     } catch (e) {
-      // Handle configuration errors silently
+      print('[ForegroundTask] _loadConfiguration error: $e');
     }
   }
   
@@ -83,14 +87,17 @@ class AttendanceTaskHandler extends TaskHandler {
     if (_apiBaseUrl == null || _token == null) return;
     
     try {
+      final url = '$_apiBaseUrl/api/esp32/devices';
+      print('[ForegroundTask] Fetching registered ESP32 devices from $url');
       final response = await http.get(
-        Uri.parse('$_apiBaseUrl/api/esp32/devices'),
+        Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $_token',
           'Content-Type': 'application/json',
         },
       );
-      
+
+      print('[ForegroundTask] ESP32 devices response status: ${response.statusCode}');
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         _registeredEsp32Devices = (data as List)
@@ -99,19 +106,21 @@ class AttendanceTaskHandler extends TaskHandler {
             .toList();
       }
     } catch (e) {
-      // Handle API errors silently
+      print('[ForegroundTask] _loadRegisteredEsp32Devices error: $e');
     }
   }
 
   Future<void> _requestPermissions() async {
     try {
-      await Permission.location.request();
-      await Permission.locationAlways.request();
-      await Permission.bluetooth.request();
-      await Permission.bluetoothScan.request();
-      await Permission.bluetoothConnect.request();
+      print('[ForegroundTask] Requesting permissions...');
+      final loc = await Permission.location.request();
+      final locAlways = await Permission.locationAlways.request();
+      final bt = await Permission.bluetooth.request();
+      final btScan = await Permission.bluetoothScan.request();
+      final btConnect = await Permission.bluetoothConnect.request();
+      print('[ForegroundTask] Permission results - location: $loc, locationAlways: $locAlways, bluetooth: $bt, bluetoothScan: $btScan, bluetoothConnect: $btConnect');
     } catch (e) {
-      // Handle permission errors silently
+      print('[ForegroundTask] _requestPermissions error: $e');
     }
   }
 
@@ -121,8 +130,11 @@ class AttendanceTaskHandler extends TaskHandler {
     }
     
     try {
+      print('[ForegroundTask] Performing scan...');
       final isOn = await FlutterBluePlus.isOn;
+      print('[ForegroundTask] Bluetooth adapter isOn: $isOn');
       if (!isOn) {
+        print('[ForegroundTask] Bluetooth is off - reporting absence if needed');
         if (_shouldReportStatus(false)) {
           await _reportAbsence();
           _lastReportedPresence = false;
@@ -144,11 +156,14 @@ class AttendanceTaskHandler extends TaskHandler {
             withServices: [],
           );
           scanStarted = true;
+          print('[ForegroundTask] startScan succeeded');
         } catch (e) {
           retryCount++;
+          print('[ForegroundTask] startScan error (attempt $retryCount): $e');
           if (retryCount < maxRetries) {
             await Future.delayed(Duration(seconds: 2));
           } else {
+            print('[ForegroundTask] startScan failed after $retryCount attempts');
             return;
           }
         }
@@ -159,7 +174,9 @@ class AttendanceTaskHandler extends TaskHandler {
       List<ScanResult> scanResults = [];
       try {
         scanResults = await FlutterBluePlus.lastScanResults;
+        print('[ForegroundTask] scanResults count: ${scanResults.length}');
       } catch (e) {
+        print('[ForegroundTask] error getting lastScanResults: $e');
         return;
       }
       
@@ -178,6 +195,7 @@ class AttendanceTaskHandler extends TaskHandler {
       
       if (detectedEsp32Devices.isNotEmpty) {
         _consecutiveFailedScans = 0;
+        print('[ForegroundTask] Detected registered ESP32 devices: $detectedEsp32Devices');
         if (_shouldReportStatus(true)) {
           await _reportPresence(detectedEsp32Devices.first);
           _lastReportedPresence = true;
@@ -185,6 +203,7 @@ class AttendanceTaskHandler extends TaskHandler {
         }
       } else {
         _consecutiveFailedScans++;
+        print('[ForegroundTask] No registered ESP32 devices detected. consecutiveFailedScans=$_consecutiveFailedScans');
         
         if (_consecutiveFailedScans >= MAX_FAILED_SCANS_BEFORE_ABSENCE) {
           if (_shouldReportStatus(false)) {
@@ -197,11 +216,12 @@ class AttendanceTaskHandler extends TaskHandler {
       
       try {
         await FlutterBluePlus.stopScan();
+        print('[ForegroundTask] stopScan called');
       } catch (e) {
-        // Handle scan stop errors silently
+        print('[ForegroundTask] stopScan error: $e');
       }
     } catch (e) {
-      // Handle scan errors silently
+      print('[ForegroundTask] _performScan top-level error: $e');
     }
   }
 
@@ -239,8 +259,9 @@ class AttendanceTaskHandler extends TaskHandler {
           'rssi': device['rssi'],
         }),
       );
+      print('[ForegroundTask] presence report status: ${response.statusCode}');
     } catch (e) {
-      // Handle presence report errors silently
+      print('[ForegroundTask] _reportPresence error: $e');
     }
   }
 
@@ -259,8 +280,9 @@ class AttendanceTaskHandler extends TaskHandler {
           'status': 'absent',
         }),
       );
+      print('[ForegroundTask] absence report status: ${response.statusCode}');
     } catch (e) {
-      // Handle absence report errors silently
+      print('[ForegroundTask] _reportAbsence error: $e');
     }
   }
 }

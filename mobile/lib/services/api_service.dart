@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // Configurable API settings
-  static const String _defaultIp = '10.0.0.4';
+  static const String _defaultIp = '10.0.0.13';
   static const String _defaultPort = '3000';
   static const String _apiPath = '/api';
   
@@ -31,10 +31,40 @@ class ApiService {
       'port': prefs.getString('api_port') ?? _defaultPort,
     };
   }
+
+  // Test connection to backend server
+  static Future<Map<String, dynamic>> testConnection() async {
+    try {
+      final url = await baseUrl;
+      print('🔍 Testing connection to: $url');
+      
+      final response = await http.get(
+        Uri.parse('$url/../'), // Test root endpoint
+      ).timeout(const Duration(seconds: 5));
+      
+      return {
+        'success': true,
+        'url': url,
+        'statusCode': response.statusCode,
+        'message': 'Connection successful'
+      };
+    } catch (e) {
+      print('❌ Connection test failed: $e');
+      final url = await baseUrl;
+      return {
+        'success': false,
+        'url': url,
+        'error': e.toString(),
+        'message': 'Cannot reach server. Check IP address and ensure backend is running.'
+      };
+    }
+  }
   
   static Future<Map<String, dynamic>> login(String username, String password) async {
     try {
       final url = await baseUrl;
+      print('🔍 API: Logging in to: $url/auth/login');
+      
       final response = await http.post(
         Uri.parse('$url/auth/login'),
         headers: {'Content-Type': 'application/json'},
@@ -44,14 +74,26 @@ class ApiService {
         }),
       );
 
+      print('🔍 API: Login response status: ${response.statusCode}');
+      print('🔍 API: Login response body: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         await _storeToken(data['token']);
+        
+        // Store employee_id from user data for later use
+        if (data['user'] != null && data['user']['employee_id'] != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('employee_id', data['user']['employee_id'].toString());
+          print('🔍 API: Stored employee_id: ${data['user']['employee_id']}');
+        }
+        
         return data;
       } else {
         throw Exception('Login failed: ${response.body}');
       }
     } catch (e) {
+      print('❌ API: Login error: $e');
       throw Exception('Login error: $e');
     }
   }
@@ -117,9 +159,15 @@ class ApiService {
     return prefs.getString('auth_token');
   }
 
+  static Future<String?> getStoredEmployeeId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('employee_id');
+  }
+
   static Future<void> clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
+    await prefs.remove('employee_id');  // Also clear employee_id on logout
   }
   
   // ESP32 Devices API

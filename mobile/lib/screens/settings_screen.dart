@@ -20,6 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _portController = TextEditingController();
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _isTesting = false;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       final config = await ApiService.getApiConfig();
       setState(() {
-        _ipController.text = config['ip'] ?? '10.0.0.4';
+        _ipController.text = config['ip'] ?? '10.0.0.13';
         _portController.text = config['port'] ?? '3000';
         _isLoading = false;
       });
@@ -61,6 +62,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } finally {
       setState(() {
         _isSaving = false;
+      });
+    }
+  }
+
+  Future<void> _testConnection() async {
+    if (_ipController.text.isEmpty || _portController.text.isEmpty) {
+      _showSnackBar('Please fill in all fields first', Colors.red);
+      return;
+    }
+
+    setState(() {
+      _isTesting = true;
+    });
+
+    try {
+      // Save settings first
+      await ApiService.setApiConfig(_ipController.text, _portController.text);
+      
+      // Test connection
+      final result = await ApiService.testConnection();
+      
+      if (result['success']) {
+        _showSnackBar('✅ Connection successful!\n${result['url']}', Colors.green);
+      } else {
+        _showSnackBar('❌ Connection failed:\n${result['message']}', Colors.red);
+      }
+    } catch (e) {
+      _showSnackBar('Error testing connection: $e', Colors.red);
+    } finally {
+      setState(() {
+        _isTesting = false;
       });
     }
   }
@@ -146,7 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         controller: _ipController,
                         decoration: InputDecoration(
                           labelText: 'Server IP Address',
-                          hintText: '10.0.0.4',
+                          hintText: '10.0.0.13',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -168,32 +200,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         keyboardType: TextInputType.number,
                       ),
                       const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _isSaving ? null : _saveSettings,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade600,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _isTesting ? null : _testConnection,
+                              icon: _isTesting 
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : const Icon(Icons.wifi_find),
+                              label: Text(_isTesting ? 'Testing...' : 'Test Connection'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange.shade600,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
                             ),
                           ),
-                          child: _isSaving
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                              : const Text(
-                                  'Save Settings',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _isSaving ? null : _saveSettings,
+                              icon: _isSaving 
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : const Icon(Icons.save),
+                              label: Text(_isSaving ? 'Saving...' : 'Save'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue.shade600,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                        ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

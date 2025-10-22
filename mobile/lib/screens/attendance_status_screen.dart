@@ -82,20 +82,36 @@ class _AttendanceStatusScreenState extends State<AttendanceStatusScreen> {
   }
   
   Future<void> _initForegroundService() async {
-    final isRunning = await ForegroundAttendanceService.isServiceRunning();
-    if (mounted) {
-      setState(() {
-        _foregroundServiceRunning = isRunning;
-      });
+    try {
+      final isRunning = await ForegroundAttendanceService.isServiceRunning();
+      print('🔍 Checking service status: ${isRunning ? "RUNNING" : "NOT RUNNING"}');
+      
+      if (mounted) {
+        setState(() {
+          _foregroundServiceRunning = isRunning;
+        });
+      }
+    } catch (e) {
+      print('❌ Error checking service status: $e');
     }
   }
 
   Future<void> _initializeApp() async {
     try {
+      print('🚀 Initializing attendance status screen...');
+      
       // Load user data
+      print('📱 Loading user data...');
       final user = await ApiService.getCurrentUser(widget.token);
+      print('✅ User data loaded: ${user['name']}');
+      
+      print('📊 Loading attendance data...');
       final attendance = await ApiService.getMyAttendance(widget.token);
+      print('✅ Attendance data loaded: ${attendance.length} records');
+      
+      print('🔵 Checking Bluetooth status...');
       final bluetoothOn = await ForegroundAttendanceService.isBluetoothEnabled();
+      print('🔵 Bluetooth status: ${bluetoothOn ? "ON" : "OFF"}');
       
       String userStatus = 'Absent';
       String detectedDevice = 'None';
@@ -123,14 +139,25 @@ class _AttendanceStatusScreenState extends State<AttendanceStatusScreen> {
       // Automatically start background service only
       // Check Bluetooth status
       if (bluetoothOn) {
-        // Starting background service for continuous tracking
-        // Start foreground service automatically - this handles all scanning
-        await ForegroundAttendanceService.startService();
-        setState(() {
-          _foregroundServiceRunning = true;
-        });
+        print('🔵 Bluetooth is ON - Starting foreground service...');
+        
+        try {
+          // Start foreground service automatically - this handles all scanning
+          final started = await ForegroundAttendanceService.startService();
+          
+          if (started) {
+            print('✅ Foreground service started successfully!');
+            setState(() {
+              _foregroundServiceRunning = true;
+            });
+          } else {
+            print('❌ Failed to start foreground service - returned false');
+          }
+        } catch (e) {
+          print('❌ Error starting foreground service: $e');
+        }
       } else {
-        // Bluetooth not enabled, reporting absence
+        print('🔴 Bluetooth is OFF - Reporting absence');
         // Report absence if Bluetooth is off
         _reportAbsenceDueToBluetoothOff();
       }
